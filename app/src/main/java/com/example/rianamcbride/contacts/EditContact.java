@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +32,7 @@ public class EditContact extends AppCompatActivity {
     int id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("TEST", "Made it to EditContact");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_contact);
         firstName = findViewById(R.id.editText);
@@ -45,6 +47,7 @@ public class EditContact extends AppCompatActivity {
         phoneNum.setText(getIntent().getStringExtra("phone"));
         add.setText(getIntent().getStringExtra("address"));
         mail.setText(getIntent().getStringExtra("email"));
+        imageButton.setImageBitmap((Bitmap) getIntent().getParcelableExtra("image"));
         id = getIntent().getIntExtra("id",0);
         button.setOnClickListener(new View.OnClickListener() {
             @Override

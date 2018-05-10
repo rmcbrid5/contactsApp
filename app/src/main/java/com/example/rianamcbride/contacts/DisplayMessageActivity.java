@@ -22,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.Random;
 
 public class DisplayMessageActivity extends AppCompatActivity {
     EditText firstName;
@@ -31,6 +33,7 @@ public class DisplayMessageActivity extends AppCompatActivity {
     EditText mail;
     Button button;
     ImageButton imageButton;
+    List<Bitmap> images;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +45,10 @@ public class DisplayMessageActivity extends AppCompatActivity {
         mail = findViewById(R.id.editText6);
         button = findViewById(R.id.button);
         imageButton = findViewById(R.id.imageButton);
+        Random random = new Random();
+        int n = random.nextInt(3);
+        images = MainActivity.getImages();
+        imageButton.setImageBitmap(Bitmap.createScaledBitmap(images.get(n),120,120,false));
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

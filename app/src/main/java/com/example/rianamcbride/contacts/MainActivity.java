@@ -20,12 +20,16 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
 public class MainActivity extends AppCompatActivity {
+    private static List<Bitmap> images;
     private List<Contact> contactList = new ArrayList<>();
     private RecyclerView recyclerView;
     private MyAdapter mAdapter;
@@ -45,6 +49,11 @@ public class MainActivity extends AppCompatActivity {
         pDialog.setMessage("Reading contacts...");
         pDialog.setCancelable(false);
         pDialog.show();
+        images = new ArrayList<>();
+        images.add(BitmapFactory.decodeResource(getResources(), R.drawable.dog1));
+        images.add(BitmapFactory.decodeResource(getResources(), R.drawable.dog2));
+        images.add(BitmapFactory.decodeResource(getResources(), R.drawable.dog3));
+        images.add(BitmapFactory.decodeResource(getResources(), R.drawable.dog4));
         mAdapter = new MyAdapter(contactList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -70,7 +79,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
-
+    public static List<Bitmap> getImages(){
+        return images;
+    }
     private boolean mayRequestContacts(){
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
@@ -101,7 +112,9 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("phone", contact.getPhone());
         intent.putExtra("address", contact.getAddress());
         intent.putExtra("email", contact.getEmail());
-        intent.putExtra("image", contact.getImage());
+        Bitmap image = contact.getImage();
+        intent.putExtra("image", image);
+        Log.d("TEST", image + " this is the image ");
         startActivityForResult(intent, 1);
     }
 
@@ -179,7 +192,9 @@ public class MainActivity extends AppCompatActivity {
                     phone=" ";
                 }
                 Log.d("TEST", "address: "+address);
-                contact = new Contact(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round), name, null, address, phone, email);
+                Random random = new Random();
+                int n = random.nextInt(3);
+                contact = new Contact(Bitmap.createScaledBitmap(images.get(n),120,120,false), name, null, address, phone, email);
                 contactList.add(contact);
             }
         }
