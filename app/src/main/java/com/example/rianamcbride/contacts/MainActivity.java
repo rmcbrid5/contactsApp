@@ -1,5 +1,6 @@
 package com.example.rianamcbride.contacts;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,7 +23,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private Handler updateBarHandler;
     Cursor cursor;
     int counter;
+    @SuppressLint("StaticFieldLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        recyclerView.setAdapter(mAdapter);
+
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
@@ -72,17 +74,28 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }));
-        new Thread(new Runnable() {
+        new AsyncTask<Void, Void, Integer>(){
             @Override
-            public void run() {
-                getContacts();
+            protected Integer doInBackground(Void... voids) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getContacts();
+                    }
+                });
+                return 0;
             }
-        }).start();
+            @Override
+            protected void onPostExecute(Integer integer) {
+                recyclerView.setAdapter(mAdapter);
+            }
+        }.execute();
     }
+
     public static List<Bitmap> getImages(){
         return images;
     }
-    private boolean mayRequestContacts(){
+    public boolean mayRequestContacts(){
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
         }
@@ -114,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("email", contact.getEmail());
         Bitmap image = contact.getImage();
         intent.putExtra("image", image);
-        Log.d("TEST", image + " this is the image ");
         startActivityForResult(intent, 1);
     }
 
@@ -174,13 +186,11 @@ public class MainActivity extends AppCompatActivity {
                 while(emailCursor.moveToNext()){
                     email = emailCursor.getString(emailCursor.getColumnIndex(DATA));
                 }
-
                 emailCursor.close();
                 Cursor addressCursor = contentResolver.query(AddressCONTENT_URI, null, AddressCONTACT_ID + " = ?", new String[]{contact_id}, null);
                 while(addressCursor.moveToNext()){
                     address = addressCursor.getString(addressCursor.getColumnIndex(FORMATTED_ADDRESS));
                 }
-                Log.d("TEST", "name: "+name+" address: "+address+" phone: "+phone);
                 addressCursor.close();
                 if(name==null){
                     name=" ";
@@ -191,10 +201,10 @@ public class MainActivity extends AppCompatActivity {
                 if(phone==null){
                     phone=" ";
                 }
-                Log.d("TEST", "address: "+address);
                 Random random = new Random();
                 int n = random.nextInt(3);
                 contact = new Contact(Bitmap.createScaledBitmap(images.get(n),120,120,false), name, null, address, phone, email);
+                Log.d("TEST", "Adding contact: name: "+name+", email: "+email+", phone: "+phone+", address: "+address);
                 contactList.add(contact);
             }
         }

@@ -24,6 +24,7 @@ import android.widget.Toast;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 public class DisplayMessageActivity extends AppCompatActivity {
     EditText firstName;
@@ -90,6 +91,18 @@ public class DisplayMessageActivity extends AppCompatActivity {
             AlertDialog alertDialog = new AlertDialog.Builder(DisplayMessageActivity.this).create();
             alertDialog.setTitle("Incomplete Contact");
             alertDialog.setMessage("Please fill in more information");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            alertDialog.show();
+        }
+        else if(!Pattern.matches("[a-zA-Z]+", phone) && phone.length() > 9){
+            AlertDialog alertDialog = new AlertDialog.Builder(DisplayMessageActivity.this).create();
+            alertDialog.setTitle("Phone number is invalid");
+            alertDialog.setMessage("Please enter a valid phone number");
             alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {

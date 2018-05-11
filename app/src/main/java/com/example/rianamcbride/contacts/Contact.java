@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.media.Image;
 
 import java.util.Random;
+import java.util.regex.Pattern;
 
 public class Contact {
     private String fName, lName, address, phone, email;
@@ -55,4 +56,11 @@ public class Contact {
     public void setlName(String lName){
         this.lName = lName;
     }
+    public boolean isValidContact(){
+        return lName != null || fName != null || phone != null;
+    }
+    public boolean isValidPhone(){
+        return !Pattern.matches("[a-zA-Z]+", phone) && phone.length() > 9;
+    }
+
 }

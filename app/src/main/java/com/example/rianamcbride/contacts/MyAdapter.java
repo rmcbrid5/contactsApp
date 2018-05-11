@@ -39,7 +39,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Contact contact = contactList.get(position);
-        Log.d("TEST", "name: "+contact.getfName()+" last name: "+contact.getlName()+" phone: "+contact.getPhone()+" email: "+contact.getEmail()+" address: "+contact.getAddress());
         holder.image.setImageBitmap(Bitmap.createScaledBitmap(contact.getImage(), 120, 120, false));
         if(contact.getlName()==null){
             contact.setlName(" ");
@@ -67,6 +66,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public int getItemCount() {
-        return contactList.size();
+        return contactList == null ? 0 : contactList.size();
     }
 }
