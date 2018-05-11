@@ -3,11 +3,14 @@ package com.example.rianamcbride.contacts;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -19,10 +22,13 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -201,9 +207,17 @@ public class MainActivity extends AppCompatActivity {
                 if(phone==null){
                     phone=" ";
                 }
-                Random random = new Random();
-                int n = random.nextInt(3);
-                contact = new Contact(Bitmap.createScaledBitmap(images.get(n),120,120,false), name, null, address, phone, email);
+                Bitmap bm = null;
+                    InputStream inputStream = ContactsContract.Contacts.openContactPhotoInputStream(getContentResolver(), ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact_id)));
+                    if(inputStream != null){
+                        bm = BitmapFactory.decodeStream(inputStream);
+                        contact = new Contact(Bitmap.createScaledBitmap(bm,300,300,false), name, null, address, phone, email);
+                    }
+                    else{
+                        Random random = new Random();
+                        int n = random.nextInt(3);
+                        contact = new Contact(Bitmap.createScaledBitmap(images.get(n),300,300,false), name, null, address, phone, email);
+                    }
                 Log.d("TEST", "Adding contact: name: "+name+", email: "+email+", phone: "+phone+", address: "+address);
                 contactList.add(contact);
             }

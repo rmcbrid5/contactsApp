@@ -11,7 +11,10 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ActionMenuView;
@@ -42,6 +45,41 @@ public class DisplayMessageActivity extends AppCompatActivity {
         firstName = findViewById(R.id.editText);
         lastName = findViewById(R.id.editText2);
         phoneNum = findViewById(R.id.editText4);
+        phoneNum.addTextChangedListener(new TextWatcher() {
+            int keyDel;
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                phoneNum.setOnKeyListener(new View.OnKeyListener() {
+                    @Override
+                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                        if (keyCode == KeyEvent.KEYCODE_DEL)
+                            keyDel = 1;
+                        return false;
+                    }
+                });
+
+                if (keyDel == 0) {
+                    int len = phoneNum.getText().length();
+                    if(len == 3||len == 7) {
+                        phoneNum.setText(phoneNum.getText() + "-");
+                        phoneNum.setSelection(phoneNum.getText().length());
+                    }
+                } else {
+                    keyDel = 0;
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         add = findViewById(R.id.editText3);
         mail = findViewById(R.id.editText6);
         button = findViewById(R.id.button);
@@ -49,7 +87,7 @@ public class DisplayMessageActivity extends AppCompatActivity {
         Random random = new Random();
         int n = random.nextInt(3);
         images = MainActivity.getImages();
-        imageButton.setImageBitmap(Bitmap.createScaledBitmap(images.get(n),120,120,false));
+        imageButton.setImageBitmap(Bitmap.createScaledBitmap(images.get(n),300,300,false));
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,7 +111,7 @@ public class DisplayMessageActivity extends AppCompatActivity {
             Bitmap bitmap;
             try{
                 bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
-                imageButton.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 120, 120, false));
+                imageButton.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 300, 300, false));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -99,7 +137,7 @@ public class DisplayMessageActivity extends AppCompatActivity {
             });
             alertDialog.show();
         }
-        else if(!Pattern.matches("[a-zA-Z]+", phone) && phone.length() > 9){
+        else if(Pattern.matches("[a-zA-Z]+", phone)){
             AlertDialog alertDialog = new AlertDialog.Builder(DisplayMessageActivity.this).create();
             alertDialog.setTitle("Phone number is invalid");
             alertDialog.setMessage("Please enter a valid phone number");

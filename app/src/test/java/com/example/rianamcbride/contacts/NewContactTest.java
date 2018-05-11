@@ -1,9 +1,5 @@
 package com.example.rianamcbride.contacts;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import org.junit.Test;
 
