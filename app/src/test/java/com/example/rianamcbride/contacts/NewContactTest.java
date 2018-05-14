@@ -3,6 +3,9 @@ package com.example.rianamcbride.contacts;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -71,5 +74,59 @@ public class NewContactTest {
         assertTrue(contact.getfName().equals("John"));
         assertTrue(contact.getlName().equals("Doe"));
         assertTrue(contact.getPhone().equals("1234567890"));
+    }
+    @Test
+    public void addFromAppValid(){
+        DisplayMessageActivity dma = new DisplayMessageActivity();
+        assertThat(dma.isValidContact("John", "Doe", "9055558765", "jdoe@gmail.com"), is(true));
+    }
+    @Test
+    public void addFromAppInvalid(){
+        DisplayMessageActivity dma = new DisplayMessageActivity();
+        assertThat(dma.isValidContact("", "", "", ""), is(false));
+    }
+    @Test
+    public void addValidPhone(){
+        DisplayMessageActivity dma = new DisplayMessageActivity();
+        assertThat(dma.isValidPhone("9055558765"), is(true));
+    }
+    @Test
+    public void addInvalidPhone(){
+        DisplayMessageActivity dma = new DisplayMessageActivity();
+        assertThat(dma.isValidPhone("abc"), is(false));
+    }
+    @Test
+    public void editFromAppValid(){
+        DisplayMessageActivity dma = new DisplayMessageActivity();
+        assertThat(dma.isValidContact("John", "Doe", "9055558765", "jdoe@gmail.com"), is(true));
+    }
+    @Test
+    public void editFromAppInvalid(){
+        DisplayMessageActivity dma = new DisplayMessageActivity();
+        assertThat(dma.isValidContact("", "", "", ""), is(false));
+    }
+    @Test
+    public void editValidPhone(){
+        DisplayMessageActivity dma = new DisplayMessageActivity();
+        assertThat(dma.isValidPhone("9055558765"), is(true));
+    }
+    @Test
+    public void editInvalidPhone(){
+        DisplayMessageActivity dma = new DisplayMessageActivity();
+        assertThat(dma.isValidPhone("abc"), is(false));
+    }
+    @Test
+    public void correctNumberIfZero(){
+        List<Contact> contactList = new ArrayList<>();
+        MyAdapter myAdapter = new MyAdapter(contactList);
+        assertThat(myAdapter.getItemCount(), is(0));
+    }
+    @Test
+    public void correctNumberIfGreaterThanZero(){
+        List<Contact> contactList = new ArrayList<>();
+        MyAdapter myAdapter = new MyAdapter(contactList);
+        contactList.add(new Contact(null, "John", "Doe", null, null, null));
+        contactList.add(new Contact(null, "Anna", "Smith", null, null, null));
+        assertThat(myAdapter.getItemCount(), is(2));
     }
 }

@@ -30,12 +30,16 @@ import android.view.View;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
 public class MainActivity extends AppCompatActivity {
+    //declare variables
     private static List<Bitmap> images;
     private List<Contact> contactList = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -53,21 +57,24 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         updateBarHandler = new Handler();
+        //display dialog when the contacts are being fetched
         pDialog = new ProgressDialog(MainActivity.this);
         pDialog.setMessage("Reading contacts...");
         pDialog.setCancelable(false);
         pDialog.show();
         images = new ArrayList<>();
+        //add images to the list from the resources
         images.add(BitmapFactory.decodeResource(getResources(), R.drawable.dog1));
         images.add(BitmapFactory.decodeResource(getResources(), R.drawable.dog2));
         images.add(BitmapFactory.decodeResource(getResources(), R.drawable.dog3));
         images.add(BitmapFactory.decodeResource(getResources(), R.drawable.dog4));
         mAdapter = new MyAdapter(contactList);
+        //set the layout manager to linear
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-
+        //add the on touch listener to edit the contact
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
@@ -80,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }));
+        //set up the contact list and then set the adapter to the recyclerview
         new AsyncTask<Void, Void, Integer>(){
             @Override
             protected Integer doInBackground(Void... voids) {
@@ -101,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
     public static List<Bitmap> getImages(){
         return images;
     }
+    //test whether the phone will allow contacts to be accessed
     public boolean mayRequestContacts(){
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
@@ -115,14 +124,17 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
+    //check the result of the request
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
         if (requestCode == 1) {
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //if permission has been granted, then get the list
                 getContacts();
             }
         }
     }
+    //when the user wants to edit the contact
     private void editContact(Contact contact) {
         Intent intent = new Intent(this, EditContact.class);
         intent.putExtra("id", contact.getId());
@@ -135,12 +147,15 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("image", image);
         startActivityForResult(intent, 1);
     }
-
+    public List<Contact> getContactList(){
+        return contactList;
+    }
+    //create a new contact
     public void newContact(View view){
         Intent intent = new Intent(this, DisplayMessageActivity.class);
         startActivityForResult(intent, 1);
     }
-
+    //get the contacts in the phone
     public void getContacts(){
         Contact contact;
         if (!mayRequestContacts()) {
@@ -207,17 +222,17 @@ public class MainActivity extends AppCompatActivity {
                 if(phone==null){
                     phone=" ";
                 }
-                Bitmap bm = null;
-                    InputStream inputStream = ContactsContract.Contacts.openContactPhotoInputStream(getContentResolver(), ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact_id)));
-                    if(inputStream != null){
-                        bm = BitmapFactory.decodeStream(inputStream);
-                        contact = new Contact(Bitmap.createScaledBitmap(bm,300,300,false), name, null, address, phone, email);
-                    }
-                    else{
-                        Random random = new Random();
-                        int n = random.nextInt(3);
-                        contact = new Contact(Bitmap.createScaledBitmap(images.get(n),300,300,false), name, null, address, phone, email);
-                    }
+                Bitmap bm;
+                InputStream inputStream = ContactsContract.Contacts.openContactPhotoInputStream(getContentResolver(), ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact_id)));
+                if(inputStream != null){
+                    bm = BitmapFactory.decodeStream(inputStream);
+                    contact = new Contact(Bitmap.createScaledBitmap(bm,300,300,false), name, null, address, phone, email);
+                }
+                else{
+                    Random random = new Random();
+                    int n = random.nextInt(3);
+                    contact = new Contact(Bitmap.createScaledBitmap(images.get(n),300,300,false), name, null, address, phone, email);
+                }
                 Log.d("TEST", "Adding contact: name: "+name+", email: "+email+", phone: "+phone+", address: "+address);
                 contactList.add(contact);
             }
@@ -240,6 +255,12 @@ public class MainActivity extends AppCompatActivity {
                     for(int i=0; i < contactList.size(); i++){
                         if(contactList.get(i).getId()==data.getIntExtra("id",0)){
                             contactList.get(i).setValues((Bitmap) data.getParcelableExtra("image"), data.getStringExtra("FirstName"), data.getStringExtra("LastName"), data.getStringExtra("address"), data.getStringExtra("phone"), data.getStringExtra("email"));
+                            Collections.sort(contactList, new Comparator<Contact>() {
+                                @Override
+                                public int compare(Contact o1, Contact o2) {
+                                    return o1.getfName().compareTo(o2.getfName());
+                                }
+                            });
                             mAdapter.notifyDataSetChanged();
                         }
                     }
@@ -247,6 +268,12 @@ public class MainActivity extends AppCompatActivity {
                 else{
                     Contact contact = new Contact((Bitmap) data.getParcelableExtra("image"), data.getStringExtra("FirstName"), data.getStringExtra("LastName"), data.getStringExtra("address"), data.getStringExtra("phone"), data.getStringExtra("email"));
                     contactList.add(contact);
+                    Collections.sort(contactList, new Comparator<Contact>() {
+                        @Override
+                        public int compare(Contact o1, Contact o2) {
+                            return o1.getfName().compareTo(o2.getfName());
+                        }
+                    });
                     mAdapter.notifyDataSetChanged();
                 }
             }

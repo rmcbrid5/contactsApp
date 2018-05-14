@@ -77,7 +77,7 @@ public class EditContact extends AppCompatActivity {
             }
         });
         add = findViewById(R.id.editText3);
-        mail = findViewById(R.id.editText5);
+        mail = findViewById(R.id.editText6);
         button = findViewById(R.id.button);
         imageButton = findViewById(R.id.imageButton);
         firstName.setText(getIntent().getStringExtra("firstName"));
@@ -124,7 +124,7 @@ public class EditContact extends AppCompatActivity {
         String address = add.getText().toString();
         String email = mail.getText().toString();
         Bitmap image = ((BitmapDrawable) imageButton.getDrawable()).getBitmap();
-        if(fName.equals("")&&lName.equals("")&&phone.equals("")&&email.equals("")){
+        if(!isValidContact(fName, lName, phone, email)){
             AlertDialog alertDialog = new AlertDialog.Builder(EditContact.this).create();
             alertDialog.setTitle("Incomplete Contact");
             alertDialog.setMessage("Please fill in more information");
@@ -135,7 +135,7 @@ public class EditContact extends AppCompatActivity {
                 }
             });
             alertDialog.show();
-        }else if(Pattern.matches("[a-zA-Z]+", phone)){
+        }else if(!isValidPhone(phone)){
             AlertDialog alertDialog = new AlertDialog.Builder(EditContact.this).create();
             alertDialog.setTitle("Phone number is invalid");
             alertDialog.setMessage("Please enter a valid phone number");
@@ -162,7 +162,12 @@ public class EditContact extends AppCompatActivity {
             finish();
         }
     }
-
+    public boolean isValidContact(String fName, String lName, String phone, String email){
+        return !(fName.equals("")&&lName.equals("")&&phone.equals("")&&email.equals(""));
+    }
+    public boolean isValidPhone(String phone){
+        return !Pattern.matches("[a-zA-Z]+", phone);
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()==android.R.id.home){
