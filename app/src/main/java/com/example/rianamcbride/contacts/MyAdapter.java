@@ -13,6 +13,7 @@ import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private List<Contact> contactList;
+    //create the adapter so that the recyclerview can communicate with the main activity
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView fName, lName, phone, address;
         public ImageView image;
@@ -25,11 +26,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             address = (TextView) v.findViewById(R.id.address);
         }
     }
+    //make the adapter hold the list of contacts
     public MyAdapter(List<Contact> contactsList){
         contactList = contactsList;
     }
     @NonNull
     @Override
+    //when you create a view holder, get the context from the parent and set it into layout type of the contact_list_row
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.contact_list_row, parent, false);
@@ -38,25 +41,31 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        //when the new data is binded to the view holder
         Contact contact = contactList.get(position);
+        //where the image is, set the bitmap to whatever the contact image is
         holder.image.setImageBitmap(Bitmap.createScaledBitmap(contact.getImage(), 120, 120, false));
+        //set all of the other data holders
         if(contact.getlName()==null){
-            contact.setlName(" ");
+            contact.setlName("");
             holder.lName.setText(" ");
         }
         if(contact.getfName()==null){
+            contact.setfName("");
             holder.fName.setText(" ");
         }
         else{
             holder.fName.setText(contact.getfName() + " "+contact.getlName());
         }
         if(contact.getAddress()==null){
+            contact.setAddress("");
             holder.address.setText(" ");
         }
         else{
             holder.address.setText(contact.getAddress());
         }
         if(contact.getPhone()==null){
+            contact.setPhone("");
             holder.address.setText(" ");
         }
         else{

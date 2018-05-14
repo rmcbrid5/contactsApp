@@ -23,6 +23,7 @@
     <include
         android:id="@+id/include"
         layout="@layout/content_main"
+        android:layout_width="wrap_content"
         android:layout_height="468dp"
         app:layout_anchorGravity="bottom" />
 

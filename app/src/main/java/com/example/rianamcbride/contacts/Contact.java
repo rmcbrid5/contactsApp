@@ -56,6 +56,18 @@ public class Contact {
     public void setlName(String lName){
         this.lName = lName;
     }
+    public void setAddress(String address){
+        this.address = address;
+    }
+    public void setfName(String fName){
+        this.fName = fName;
+    }
+    public void setPhone(String phone){
+        this.phone = phone;
+    }
+    public void setEmail(String email){
+        this.email = email;
+    }
     public boolean isValidContact(){
         return lName != null || fName != null || phone != null;
     }
